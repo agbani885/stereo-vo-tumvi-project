@@ -1,0 +1,50 @@
+import os
+import yaml
+import cv2
+import numpy as np
+from pathlib import Path
+
+# Load config
+config_path = Path("config/config.yaml")
+with open(config_path, 'r') as f:
+    config = yaml.safe_load(f)
+
+print("✅ Config loaded successfully!")
+print("Random seed:", config.get("random_seed"))
+print("Feature type:", config.get("feature_type"))
+
+# Set random seed for reproducibility (as required by project)
+np.random.seed(config.get("random_seed", 42))
+
+# Paths
+seq_path = Path(config["sequences"]["room2"])
+left_path = seq_path / "cam0" / "data"
+right_path = seq_path / "cam1" / "data"
+
+print(f"\n✅ Looking for images in:")
+print(f"Left (cam0): {left_path}")
+print(f"Right (cam1): {right_path}")
+
+# Check if data exists
+if not left_path.exists():
+    print("❌ Left images not found! Make sure Room2 is downloaded.")
+else:
+    # Load first image pair
+    img_files = sorted(left_path.glob("*.png"))
+    if img_files:
+        first_left = cv2.imread(str(img_files[0]), cv2.IMREAD_GRAYSCALE)
+        first_right = cv2.imread(str(right_path / img_files[0].name), cv2.IMREAD_GRAYSCALE)
+        
+        print(f"\n✅ First image pair loaded!")
+        print(f"Image shape: {first_left.shape}")
+        
+        # Show images (you will see two windows)
+        cv2.imshow("Left Camera (cam0)", first_left)
+        cv2.imshow("Right Camera (cam1)", first_right)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        print("No images found in cam0/data")
+
+# TODO: Next we will load Kalibr calibration (cam0.yaml + stereo extrinsics)
+print("\nNext step: Load Kalibr calibration and print focal length + baseline B")

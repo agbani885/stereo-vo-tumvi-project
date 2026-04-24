@@ -1,0 +1,13 @@
+# Project configuration for Stereo VO on TUM VI
+random_seed: 42
+feature_type: "ORB"          
+disparity_method: "StereoBM" 
+use_rectification: true
+
+sequences:
+  room2: "data/sequences/room2"     # root of room2 (mav0 is inside)
+  corridor3: "data/sequences/corridor3"
+  outdoors5: "data/sequences/outdoors5"
+
+calibration_file: "data/sequences/room2/dso"   # updated path
+save_trajectories: true
